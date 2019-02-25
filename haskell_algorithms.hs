@@ -58,3 +58,25 @@ scalarProduct a b = sum (scalarProductList a b)
 -- Scalar Prodcut 2nd implementation
 scalarProduct' :: [Int] -> [Int] -> Int
 scalarProduct' xs ys = sum [k * v | (k, v) <- zip xs ys]
+
+-- You are given a function plusOne x = x + 1. Without using any other (+)s,
+-- define a recursive function addition such that addition x y adds x and y together.
+plusOne :: Int -> Int
+plusOne x = x + 1
+
+add' :: Int -> Int -> Int
+add' x 0  = x
+add' 0 y = y
+add' x y = add' (plusOne x) (y - 1)
+
+-- Implement the function log2, which computes the integer log (base 2) of its argument.
+-- That is, log2 computes the exponent of the largest power of 2 which is less than or equal to its
+-- argument.
+log2 :: Int -> Int
+log2 a = last[n | n <- [1..30], a >= 2^n ]
+
+-- Second implementation of log2
+log2' :: Int -> Int
+log2' 0 = 0
+log2' 1 = 0
+log2' a = 1 + log2' (div a 2)

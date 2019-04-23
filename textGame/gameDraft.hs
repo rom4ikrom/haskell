@@ -10,10 +10,46 @@ type Response = String
 type PathMap = [((Location, Direction), Location)]
 paths :: PathMap
 paths = [
-  (("room1", "n"), "room2"),
-  (("room2", "s"), "room1"),
-  (("room1", "c"), "room1"),
-  (("room2", "c"), "room2")
+
+  {-
+  PathMap
+  -------------
+  | 4 | 5 | 6 |
+  -- –-- --- --
+  | 1 | 2 | 3 |
+  -------------
+  -}
+
+  --room1 all possible directions
+  (("room1", "n"), "room4"),
+  (("room1", "s"), "room1"),
+  (("room1", "w"), "room1"),
+  (("room1", "e"), "room2"),
+  --room2 all possible directions
+  (("room2", "n"), "room5"),
+  (("room2", "s"), "room2"),
+  (("room2", "w"), "room1"),
+  (("room2", "e"), "room3"),
+  --room3 all possible directions
+  (("room3", "n"), "room6"),
+  (("room3", "s"), "room3"),
+  (("room3", "w"), "room2"),
+  (("room3", "e"), "room3"),
+  --room4 all possible directions
+  (("room4", "n"), "room4"),
+  (("room4", "s"), "room1"),
+  (("room4", "w"), "room4"),
+  (("room4", "e"), "room5"),
+  --room5 all possible directions
+  (("room5", "n"), "room5"),
+  (("room5", "s"), "room2"),
+  (("room5", "w"), "room4"),
+  (("room5", "e"), "room6"),
+  --room6 all possible directions
+  (("room6", "n"), "room6"),
+  (("room6", "s"), "room3"),
+  (("room6", "w"), "room5"),
+  (("room6", "e"), "room6")
   ]
 
 type LocationMap = [(Thing, Location)]
@@ -59,16 +95,17 @@ do_command "n" paths locations = go "n" paths locations
 do_command "e" paths locations = go "e" paths locations
 do_command "s" paths locations = go "s" paths locations
 do_command "w" paths locations = go "w" paths locations
-do_command "u" paths locations = go "u" paths locations
-do_command _ paths locations = go "c" paths locations
+do_command _ paths locations = go "invalidInput" paths locations
 
 go :: String -> PathMap -> LocationMap -> World
 go direction paths locations = do
-            let my_location = get "myself" locations
-            let new_location = move my_location direction paths
-            let new_locations = put "myself" new_location locations
-            let response = describe new_location new_locations
-            (paths, new_locations, response)
+  if direction == "invalidInput" then (paths, locations, "Invalid Input!")
+    else do
+      let my_location = get "myself" locations
+      let new_location = move my_location direction paths
+      let new_locations = put "myself" new_location locations
+      let response = describe new_location new_locations
+      (paths, new_locations, response)
 
 -- "get" finds the value of a key in a (key, value) list
 get :: Eq a => a -> [(a, String)] -> String
@@ -92,3 +129,14 @@ describe_helper here locations = description here
 description :: Location -> String
 description "room1" = "You in the room 1"
 description "room2" = "You in the room 2"
+description "room3" = "You in the room 3"
+description "room4" = "You in the room 4"
+description "room5" = "You in the room 5"
+description "room6" = "You in the room 6"
+description "room1Current" = "No door in that direction. You are still in the room 1."
+description "room2Current" = "No door in that direction. You are still in the room 2."
+description "room3Current" = "No door in that direction. You are still in the room 3."
+description "room4Current" = "No door in that direction. You are still in the room 4."
+description "room5Current" = "No door in that direction. You are still in the room 5."
+description "room6Current" = "No door in that direction. You are still in the room 6."
+description someplace = someplace ++ ", and you can't see anything."

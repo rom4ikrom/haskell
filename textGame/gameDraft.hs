@@ -7,6 +7,13 @@ type Direction = String
 type Thing = String
 type Response = String
 
+type Type = String
+type Name = String
+
+type Inventory = [(Type, Name)]
+inventory :: Inventory
+inventory = []
+
 type PathMap = [((Location, Direction), Location)]
 paths :: PathMap
 paths = [
@@ -95,7 +102,15 @@ do_command "n" paths locations = go "n" paths locations
 do_command "e" paths locations = go "e" paths locations
 do_command "s" paths locations = go "s" paths locations
 do_command "w" paths locations = go "w" paths locations
+do_command "i" path locations = showInventory paths inventory locations
 do_command _ paths locations = go "invalidInput" paths locations
+
+showInventory :: PathMap -> Inventory -> LocationMap -> World
+showInventory paths inventory locations = do
+  if inventory == [] then (paths, locations, "Your Invertory is Empty!")
+    else do
+      let response = "It has some items!"
+      (paths, locations, response)
 
 go :: String -> PathMap -> LocationMap -> World
 go direction paths locations = do

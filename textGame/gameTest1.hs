@@ -1,6 +1,9 @@
 import Data.List
+import System.IO
+import Data.Char
 
-type Pos = (Int, Int)
+import Move
+import RoomsDescription
 
 type Location = String
 type Thing = String
@@ -9,27 +12,42 @@ type Response = String
 type PathMap = [(Pos, Location)]
 paths :: PathMap
 paths = [
-  ((1,1), "room1"),
-  ((2,1), "room2"),
-  ((3,1), "room3"),
-  ((1,2), "room4"),
-  ((2,2), "room5"),
-  ((3,2), "room6")
+  --ground floor
+  ((1,1,0), "room1"),
+  ((2,1,0), "room2"),
+  ((3,1,0), "room3"),
+  ((1,2,0), "room4"),
+  ((2,2,0), "room5"),
+  ((3,2,0), "room6"),
+  --first floow
+  ((1,1,1), "room1A"),
+  ((2,1,1), "room2A"),
+  ((3,1,1), "room3A"),
+  ((1,2,1), "room4A"),
+  ((2,2,1), "room5A"),
+  ((3,2,1), "room6A"),
+  --basement floor
+  ((1,1,-1), "room1B"),
+  ((2,1,-1), "room2B"),
+  ((3,1,-1), "room3B"),
+  ((1,2,-1), "room4B"),
+  ((2,2,-1), "room5B"),
+  ((3,2,-1), "room6B")
   ]
 
 type LocationMap = [(Thing, Pos)]
 locations :: LocationMap
 locations = [
-  ("me", (1,1))
+  ("me", (1,1,0))
   ]
 
 type ItemsLocationMap = [(Pos, Thing)]
 itemsmap :: ItemsLocationMap
 itemsmap = [
-  ((3,1), "apple"),
-  ((3,2), "sword"),
-  ((2,2), "enemy"),
-  ((1,2), "enemy")
+  ((3,1,0), "apple"),
+  ((3,2,0), "sword"),
+  ((2,2,0), "enemy"),
+  ((1,2,0), "enemy")
   ]
 
 type ItemNo = Int
@@ -43,31 +61,11 @@ type World = (PathMap, LocationMap, ItemsLocationMap, Inventory, Response)
 world :: IO (PathMap, LocationMap, ItemsLocationMap, Inventory, Response)
 world = return (paths, locations, itemsmap, items, "")
 
-data Move = North | South | West | East
-move :: Move -> Pos -> Pos
-move North (x, y) = checkMove (x, y + 1)
-move South (x, y) = checkMove (x, y - 1)
-move West (x, y) = checkMove (x - 1, y)
-move East (x, y) = checkMove (x + 1, y)
-
-checkMove :: Pos -> Pos
-checkMove (x, y) = do
-  if x == 4 then (x - 1, y)
-  else if x == 0 then (x + 1, y)
-  else if y == 3 then (x, y - 1)
-  else if y == 0 then (x, y + 1)
-  else (x, y)
-
-instructions =
-    "Enter commands using one or two words.\n" ++
-    "Available commands are:\n" ++
-    "main               -- to start the game.\n" ++
-    "n  s  e  w  u  d   -- to go in that direction.\n" ++
-    "quit               -- to end the game and quit."
-
 main :: IO (String)
 main = do putStrLn "Welcome to the Adventure Game!"
+          putStrLn ""
           putStrLn instructions
+          putStrLn room1
           play (return (paths, locations, itemsmap, items, ""))
           return "Bye!"
 
@@ -87,7 +85,7 @@ play world = do
 getPos :: Eq a => a -> [(a, Pos)] -> Pos
 getPos value list = case lookup value list of
                      Just result -> result
-                     Nothing -> (0,0)
+                     Nothing -> (0,0,0)
 
 getValue :: Eq a => a -> [(a, String)] -> String
 getValue value list = case lookup value list of
@@ -99,20 +97,25 @@ put key value list =
     let without = filter (\(x, y) -> x /= key) list
     in (key, value) : without
 
-do_command :: String -> PathMap -> LocationMap -> ItemsLocationMap -> Inventory -> World
-do_command "n" paths locations itemsmap items = go North      paths locations itemsmap items
-do_command "s" paths locations itemsmap items = go South      paths locations itemsmap items
-do_command "w" paths locations itemsmap items = go West       paths locations itemsmap items
-do_command "e" paths locations itemsmap items = go East       paths locations itemsmap items
-do_command "i" paths locations itemsmap items = showInventory paths locations itemsmap items
-do_command "p" paths locations itemsmap items = pickItem      paths locations itemsmap items
-do_command "k" paths locations itemsmap items = killEnemy     paths locations itemsmap items
-do_command _ paths locations itemsmap items = (paths, locations, itemsmap, items, "Invalid Input!")
-
 addSpace :: String -> String
 addSpace xs = if length xs <= 4
-              then xs
-              else take 4 xs ++ " " ++ addSpace (drop 4 xs)
+              then upperFirstLetter xs
+              else upperFirstLetter (take 4 xs ++ " " ++ addSpace (drop 4 xs))
+
+upperFirstLetter :: String -> String
+upperFirstLetter (x:xs) = toUpper x : xs
+
+do_command :: String -> PathMap -> LocationMap -> ItemsLocationMap -> Inventory -> World
+do_command "n" paths locations itemsmap items = go North  paths locations itemsmap items
+do_command "s" paths locations itemsmap items = go South  paths locations itemsmap items
+do_command "w" paths locations itemsmap items = go West   paths locations itemsmap items
+do_command "e" paths locations itemsmap items = go East   paths locations itemsmap items
+do_command "u" paths locations itemsmap items = go Up     paths locations itemsmap items
+do_command "d" paths locations itemsmap items = go Down   paths locations itemsmap items
+do_command "i" paths locations itemsmap items = showInventory     paths locations itemsmap items
+do_command "pick" paths locations itemsmap items = pickItem       paths locations itemsmap items
+do_command "kill" paths locations itemsmap items = killEnemy      paths locations itemsmap items
+do_command _ paths locations itemsmap items = (paths, locations, itemsmap, items, "Invalid Input!")
 
 showInventory :: PathMap -> LocationMap -> ItemsLocationMap -> Inventory -> World
 showInventory paths locations itemsmap items = do
@@ -152,9 +155,12 @@ go :: Move -> PathMap -> LocationMap -> ItemsLocationMap -> Inventory -> World
 go direction paths locations itemsmap items = do
   let my_location = getPos "me" locations
   let new_location = move direction my_location
-  let new_locations = put "me" new_location locations
-  let response = describe new_location paths new_locations
-  (paths, new_locations, itemsmap, items, response)
+  let current_room = addSpace (getValue my_location paths)
+  if new_location == my_location then (paths, locations, itemsmap, items, current_room ++ ": No door.")
+  else do
+    let new_locations = put "me" new_location locations
+    let response = describe new_location paths new_locations
+    (paths, new_locations, itemsmap, items, response)
 
 describe :: Pos -> PathMap -> LocationMap -> String
 describe new_location paths locations =
@@ -163,14 +169,15 @@ describe new_location paths locations =
 
 
 description :: Pos -> PathMap -> String
-description here paths
-  | room == "room1" = "Room 1: You in the room 1"
+description here paths = loadDescription room
+  {-
   | room == "room2" = "Room 2: You in the room 2"
   | room == "room3" = "Room 3: You in the room 3"
   | room == "room4" = "Room 4: You in the room 4"
   | room == "room5" = "Room 5: You in the room 5"
   | room == "room6" = "Room 6: You in the room 6"
   | otherwise = "Hi"
+  -}
   where room = getValue here paths
 
 

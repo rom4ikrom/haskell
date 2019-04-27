@@ -1,8 +1,17 @@
-module Move where
+module Move
+(
+  Pos(..)
+  ,Move(..)
+  ,move
+  ,checkMove
+  ,correctRoomUp
+  ,correctRoomDown
+) where
 
 type Pos = (Int, Int, Int)
 
 data Move = North | South | West | East | Up | Down
+
 move :: Move -> Pos -> Pos
 move North (x, y, z) = checkMove (x, y + 1, z)
 move South (x, y, z) = checkMove (x, y - 1, z)

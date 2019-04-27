@@ -1,8 +1,10 @@
 module Player
 ( Player(..)
 , Inventory(..)
+, increaseHealth
 , reduceHealth
 , setHealth
+, increaseEnergy
 , reduceEnergy
 , setEnergy
 , updatePosition
@@ -11,10 +13,9 @@ module Player
 ) where
 
 import Move
-import Weapon
-import Food
-
-type Inventory = [Food]
+import Weapon(Weapon)
+import Food(Food)
+import Inventory
 
 data Player = Player { health :: Int
                      , energy :: Int
@@ -23,11 +24,17 @@ data Player = Player { health :: Int
                      , currentWeapon :: Weapon
 } deriving (Show, Eq)
 
+increaseHealth :: Player -> Int -> Player
+increaseHealth player x = Player ((health player) + x) (energy player) (currentPosition player) (currentInventory player) (currentWeapon player)
+
 reduceHealth :: Player -> Int -> Player
 reduceHealth player x = Player ((health player) - x) (energy player) (currentPosition player) (currentInventory player) (currentWeapon player)
 
 setHealth :: Player -> Int -> Player
 setHealth player x = Player x (energy player) (currentPosition player) (currentInventory player) (currentWeapon player)
+
+increaseEnergy :: Player -> Int -> Player
+increaseEnergy player x = Player (health player) ((energy player) + x) (currentPosition player) (currentInventory player) (currentWeapon player)
 
 reduceEnergy :: Player -> Int -> Player
 reduceEnergy player x = Player (health player) ((energy player) - x) (currentPosition player) (currentInventory player) (currentWeapon player)

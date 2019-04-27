@@ -14,6 +14,6 @@ fists = Weapon "Fists" 7
 
 sword = Weapon "Sword" 30
 
-pistol = Weapon "Pistol" 45
+pistol = Weapon "Pistol" 48
 
 noneWeapon = Weapon "" 0

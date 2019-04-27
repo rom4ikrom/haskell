@@ -17,21 +17,21 @@ type Room = String
 
 pathsmap :: [(Pos, Room)]
 pathsmap = [
-  --ground floor
+  --ground floor - go up from room2 and room6 | go down from room3
   ((1,1,0), "room1"),
   ((2,1,0), "room2"),
   ((3,1,0), "room3"),
   ((1,2,0), "room4"),
   ((2,2,0), "room5"),
   ((3,2,0), "room6"),
-  --first floow
+  --first floor - go down from room2 and room6
   ((1,1,1), "room1A"),
   ((2,1,1), "room2A"),
   ((3,1,1), "room3A"),
   ((1,2,1), "room4A"),
   ((2,2,1), "room5A"),
   ((3,2,1), "room6A"),
-  --basement floor
+  --basement floor - go up from rooom3
   ((1,1,-1), "room1B"),
   ((2,1,-1), "room2B"),
   ((3,1,-1), "room3B"),
@@ -42,18 +42,23 @@ pathsmap = [
 
 foodmap :: [(Pos, Food)]
 foodmap = [
-  ((3,1,0), apple)
+  ((3,1,0), apple), -- room3
+  ((2,1,-1), steak), -- room2B
+  ((2,2,1), chocolate) -- room5A
   ]
 
 weaponmap :: [(Pos, Weapon)]
 weaponmap = [
-  ((3,2,0), sword)
+  ((3,2,0), sword), -- room6
+  ((1,1,1), pistol) -- room1A
   ]
 
 enemymap :: [(Pos, Enemy)]
 enemymap = [
-  ((2,2,0), goblin),
-  ((1,2,0), zombie)
+  ((2,2,0), goblin), -- room5
+  ((1,2,0), zombie), -- room4
+  ((1,1,-1), goblin), -- room1B
+  ((1,2,1), monster) -- room4A
   ]
 
 data Map = Map { pathsMap :: [(Pos, Room)]

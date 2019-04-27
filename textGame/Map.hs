@@ -1,15 +1,19 @@
 module Map
 ( Map (..)
-, Pos(..)
 , Room(..)
-, Item(..)
+, Food(..)
 , generateMap
-, updateItemsMap
+, updateFoodMap
+, updateWeaponMap
+, updateEnemyMap
 ) where
 
-import Move
+import Move (Pos)
+import Food
+import Weapon
+import Enemy
 type Room = String
-type Item = String
+
 
 pathsmap :: [(Pos, Room)]
 pathsmap = [
@@ -36,22 +40,38 @@ pathsmap = [
   ((3,2,-1), "room6B")
   ]
 
-itemsmap :: [(Pos, Item)]
-itemsmap = [
-  ((3,1,0), "apple"),
-  ((3,2,0), "sword"),
-  ((2,2,0), "enemy"),
-  ((1,2,0), "enemy")
+foodmap :: [(Pos, Food)]
+foodmap = [
+  ((3,1,0), apple)
+  ]
+
+weaponmap :: [(Pos, Weapon)]
+weaponmap = [
+  ((3,2,0), sword)
+  ]
+
+enemymap :: [(Pos, Enemy)]
+enemymap = [
+  ((2,2,0), goblin),
+  ((1,2,0), zombie)
   ]
 
 data Map = Map { pathsMap :: [(Pos, Room)]
-               , itemsMap :: [(Pos, Item)]
+               , foodMap :: [(Pos, Food)]
+               , weaponMap :: [(Pos, Weapon)]
+               , enemyMap :: [(Pos, Enemy)]
                }
 generateMap :: Map
-generateMap = Map pathsmap itemsmap
+generateMap = Map pathsmap foodmap weaponmap enemymap
 
-updateItemsMap :: Map -> [(Pos, Item)] -> Map
-updateItemsMap worldMap newItemsMap = Map (pathsMap worldMap) newItemsMap
+updateFoodMap :: Map -> [(Pos, Food)] -> Map
+updateFoodMap worldMap newFoodMap = Map (pathsMap worldMap) newFoodMap (weaponMap worldMap) (enemyMap worldMap)
+
+updateWeaponMap :: Map -> [(Pos, Weapon)] -> Map
+updateWeaponMap worldMap newWeaponMap = Map (pathsMap worldMap) (foodMap worldMap) newWeaponMap (enemyMap worldMap)
+
+updateEnemyMap :: Map -> [(Pos, Enemy)] -> Map
+updateEnemyMap worldMap newEnemyMap = Map (pathsMap worldMap) (foodMap worldMap) (weaponMap worldMap) newEnemyMap
 
 
 

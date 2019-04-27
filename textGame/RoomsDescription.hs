@@ -7,7 +7,7 @@ instructions =
     "n  s  e  w  u  d   -- to go North South East West Up Down.\n" ++
     "pick               -- to pick up the item.\n" ++
     "kill               -- attack the enemy.\n" ++
-    "i                  -- to see your inventory (what you are holding).\n" ++
+    "info               -- to see your inventory (what you are holding).\n" ++
     "quit               -- to end the game and quit.\n"
 
 room1 = "Room 1: You are in room 1. This is an empty dark room. You can hear\n" ++

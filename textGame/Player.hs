@@ -3,10 +3,8 @@ module Player
 , Inventory(..)
 , increaseHealth
 , reduceHealth
-, setHealth
 , increaseEnergy
 , reduceEnergy
-, setEnergy
 , setHealthEnergy
 , updatePosition
 , updateInventory

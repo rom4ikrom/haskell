@@ -12,7 +12,7 @@ data Food = Food { foodName :: String
                  , energyPoints :: Int
 } deriving (Show, Eq)
 
-apple = Food "Apple" 17 7
+apple = Food "Apple" 18 10
 
 chocolate = Food "Chocolate" 23 30
 

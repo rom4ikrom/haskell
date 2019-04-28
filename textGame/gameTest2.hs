@@ -150,19 +150,18 @@ killEnemy gameMap player = do
   else do
     let result = fight (energy player) (health player) (enemyHealth enemy) (weaponAttack weapon) (enemyAttack enemy)
     if result  == (0, 0)
-      then (gameMap, setHealth player 0, "Game Over!")
+      then (gameMap, setHealthEnergy player 0 0, "Game Over!")
     else do
-      let new_player = setHealth player (fst result)
+      let new_player = setHealthEnergy player (fst result) (snd result)
       let new_enemy_map = delete (my_location, enemy) (enemyMap gameMap)
-      let final_player = setEnergy new_player (snd result)
       let changed_room = (getValue my_location (pathsMap gameMap)) ++ "Changed"
       let new_room_map = map (\p@(f, _) -> if f == my_location then (my_location, changed_room) else p) (pathsMap gameMap)
       let new_map = updatePathsMap gameMap new_room_map
       if length new_enemy_map == 0 then do
         let new_inventory = updateOtherItemsInventory (currentInventory player) ("Key" : (otherItems (currentInventory player)))
-        (updateEnemyMap new_map new_enemy_map, updateInventory final_player new_inventory, "You killed the " ++ (enemyName enemy) ++ " and picked up the key!")
+        (updateEnemyMap new_map new_enemy_map, updateInventory new_player new_inventory, "You killed the " ++ (enemyName enemy) ++ " and picked up the key!")
       else do
-        (updateEnemyMap new_map new_enemy_map, final_player, "You killed the " ++ (enemyName enemy) ++ "!")
+        (updateEnemyMap new_map new_enemy_map, new_player, "You killed the " ++ (enemyName enemy) ++ "!")
 
 -- determines who win: if enemy - return (0,0)
 -- if player -- return the remainder of (health, energy)

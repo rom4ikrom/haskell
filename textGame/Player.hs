@@ -7,6 +7,7 @@ module Player
 , increaseEnergy
 , reduceEnergy
 , setEnergy
+, setHealthEnergy
 , updatePosition
 , updateInventory
 , updateWeapon
@@ -30,17 +31,14 @@ increaseHealth player x = Player ((health player) + x) (energy player) (currentP
 reduceHealth :: Player -> Int -> Player
 reduceHealth player x = Player ((health player) - x) (energy player) (currentPosition player) (currentInventory player) (currentWeapon player)
 
-setHealth :: Player -> Int -> Player
-setHealth player x = Player x (energy player) (currentPosition player) (currentInventory player) (currentWeapon player)
-
 increaseEnergy :: Player -> Int -> Player
 increaseEnergy player x = Player (health player) ((energy player) + x) (currentPosition player) (currentInventory player) (currentWeapon player)
 
 reduceEnergy :: Player -> Int -> Player
 reduceEnergy player x = Player (health player) ((energy player) - x) (currentPosition player) (currentInventory player) (currentWeapon player)
 
-setEnergy :: Player -> Int -> Player
-setEnergy player x = Player (health player) x (currentPosition player) (currentInventory player) (currentWeapon player)
+setHealthEnergy :: Player -> Int -> Int -> Player
+setHealthEnergy player x y = Player x y (currentPosition player) (currentInventory player) (currentWeapon player)
 
 updatePosition :: Player -> Move -> Player
 updatePosition player direction = Player (health player) (energy player) (move direction (currentPosition player)) (currentInventory player) (currentWeapon player)

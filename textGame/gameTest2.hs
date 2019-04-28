@@ -186,21 +186,17 @@ eatFood gameMap player = do
     let new_health = (health player) + (healthPoints food_item)
     let new_energy = (energy player) + (energyPoints food_item)
     if new_health >= 100 && new_energy < 50 then do
-      let updated_health_player = setHealth player 100
-      let new_player = setEnergy updated_health_player new_energy
+      let new_player = setHealthEnergy player 100 new_energy
       (gameMap, updateInventory new_player new_food_items, "You have Health: " ++ show (health new_player) ++ ", Energy: " ++ show (energy new_player))
     else if new_energy >= 50 && new_health < 100 then do
-      let updated_energy_player = setEnergy player 50
-      let new_player = setHealth updated_energy_player new_health
+      let new_player = setHealthEnergy player new_health 50
       (gameMap, updateInventory new_player new_food_items, "You have Health: " ++ show (health new_player) ++ ", Energy: " ++ show (energy new_player))
     else if new_health >= 100 && new_energy >= 50 then do
-      let updated_health_player = setHealth player 100
-      let updated_energy_player = setEnergy updated_health_player 50
-      let new_player = updateInventory updated_energy_player new_food_items
+      let updated_player = setHealthEnergy player 100 50
+      let new_player = updateInventory updated_player new_food_items
       (gameMap, new_player, "You have Health: " ++ show (health new_player) ++ ", Energy: " ++ show (energy new_player))
     else do
-      let new_health_player = setHealth player new_health
-      let new_player = setEnergy new_health_player new_energy
+      let new_player = setHealthEnergy player new_health new_energy
       (gameMap, updateInventory new_player new_food_items, "You have Health: " ++ show new_health ++ ", Energy: " ++ show new_energy)
 
 useItem :: Map -> Player -> World

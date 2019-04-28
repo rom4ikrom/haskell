@@ -11,8 +11,8 @@ data Enemy = Enemy { enemyName :: String
                    , enemyAttack :: Int
 } deriving (Show, Eq)
 
-zombie = Enemy "Zombie" 70 25
-goblin = Enemy "Goblin" 50 12
-monster = Enemy "Monster" 95 30
+zombie = Enemy "Zombie" 70 22
+goblin = Enemy "Goblin" 50 10
+monster = Enemy "Monster" 95 28
 
 noneEnemy = Enemy "" 0 0

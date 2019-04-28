@@ -10,9 +10,9 @@ data Weapon = Weapon { weaponName :: String
                      , weaponAttack :: Int
 } deriving (Show, Eq)
 
-fists = Weapon "Fists" 7
+fists = Weapon "Fists" 9
 
-sword = Weapon "Sword" 30
+sword = Weapon "Sword" 34
 
 pistol = Weapon "Pistol" 48
 

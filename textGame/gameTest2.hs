@@ -44,6 +44,7 @@ play world = do
   else if response == "Congratulations, you escaped the castle! You Win!" then return (worldMap, player, "Quitting.")
   else do
     putStr "command> "
+    hFlush stdout
     command <- getLine
     if command == "quit" then return (worldMap, player, "Quitting.")
     else play (return (do_command command worldMap player))
@@ -87,6 +88,7 @@ do_command "info" gameMap player = printPlayerInfo gameMap player
 do_command "kill" gameMap player = killEnemy gameMap player
 do_command "eat" gameMap player = eatFood gameMap player
 do_command "use" gameMap player = useItem gameMap player
+do_command "map" gameMap player = showMap gameMap player
 do_command _ gameMap player = (gameMap, player, "Invalid Input!")
 
 -- changes the current position of the player
@@ -216,6 +218,15 @@ useItem gameMap player = do
     else (gameMap, player, "This is the wrong place to use the Teleport!")
   else (gameMap, player, "You have nothing to use!")
 
+
+showMap :: Map -> Player -> World
+showMap gameMap player = do
+  let my_location = currentPosition player
+  let current_floor = getCurrentFloor my_location
+  let current_room = getValue my_location (pathsMap gameMap)
+  let response = mapDirections ++ "\n" ++ current_floor ++" Room: " ++ current_room
+  (gameMap, player, response)
+
 -- loads the room description
 describe :: Pos -> Map -> String
 describe position gameMap = loadDescription room
@@ -229,12 +240,12 @@ getFoodNames items = [foodName x | x <- (foodItems items)]
 getFoodItem :: String -> [Food] -> Food
 getFoodItem name list = head [x | x <- list, name == foodName x]
 
--- gets the current floor
 getCurrentFloor :: Pos -> String
-getCurrentFloor (_,_, -1) = "Basement"
-getCurrentFloor (_,_, 0) = "Ground Floor"
-getCurrentFloor (_,_, 1) = "First Floor"
-getCurrentFloor (_,_,_) = "Not Found!"
+getCurrentFloor (_,_,0) = "Ground Floor"
+getCurrentFloor (_,_,-1) = "Basement"
+getCurrentFloor (_,_,1) = "First Floor"
+getCurrentFloor (_,_,_) = "null"
+
 
 
 

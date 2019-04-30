@@ -16,6 +16,7 @@ import Weapon(Weapon)
 import Food(Food)
 import Inventory
 
+-- the Player data holds inside health, enegy, postion and two complex data types Inventory and Weapon
 data Player = Player { health :: Int
                      , energy :: Int
                      , currentPosition :: Pos

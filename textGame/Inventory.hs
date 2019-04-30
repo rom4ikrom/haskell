@@ -12,6 +12,7 @@ import Food(Food)
 type FoodItems = [Food]
 type OtherItems = [String]
 
+-- contains two separate lists: 1 for food items only; 2 for other stuff
 data Inventory = Inventory { foodItems :: FoodItems
                           , otherItems :: OtherItems
 } deriving (Show, Eq)

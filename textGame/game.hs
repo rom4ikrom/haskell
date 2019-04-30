@@ -89,7 +89,7 @@ do_command "kill" gameMap player = killEnemy gameMap player
 do_command "eat" gameMap player = eatFood gameMap player
 do_command "use" gameMap player = useItem gameMap player
 do_command "map" gameMap player = showMap gameMap player
-do_command _ gameMap player = (gameMap, player, "Invalid Input!")
+do_command _ gameMap player = (gameMap, player, "Invalid Input!") -- if user input the command which is direffent to commands above
 
 -- changes the current position of the player
 go :: Move -> Map -> Player -> World
@@ -107,13 +107,14 @@ pickItem :: Map -> Player -> World
 pickItem gameMap player = do
   let my_location = currentPosition player
   let item = getFood my_location (foodMap gameMap)
-  if item == noneFood then (gameMap, player, "Nothing to Pick Up!")
+  if item == noneFood then (gameMap, player, "Nothing to Pick Up!") -- current room does not any items to pick up
   else do
     let new_inventory = updateFoodInventory (currentInventory player) (item : (foodItems (currentInventory player)))
     let new_player = updateInventory player new_inventory
     let new_food_map = delete (my_location, item) (foodMap gameMap)
     let response = "You take the " ++ (foodName item) ++ "."
     let changed_room = (getValue my_location (pathsMap gameMap)) ++ "Changed"
+    -- finds the the room based on the location in the path map [(Pos, String)] and changes the second argument with new room name -  to have the new description for this location
     let new_room_map = map (\p@(f, _) -> if f == my_location then (my_location, changed_room) else p) (pathsMap gameMap)
     let new_map = updatePathsMap gameMap new_room_map
     (updateFoodMap new_map new_food_map, new_player, response)
@@ -200,6 +201,8 @@ eatFood gameMap player = do
       let new_player = setHealthEnergy player new_health new_energy
       (gameMap, updateInventory new_player new_food_items, "You have Health: " ++ show new_health ++ ", Energy: " ++ show new_energy)
 
+-- use the items from items inventory
+-- the item will be used if the player in the necessary room, for example - room with chest inside or room5 on the second floor to use teleport (win)
 useItem :: Map -> Player -> World
 useItem gameMap player = do
   let my_location = currentPosition player
@@ -218,7 +221,7 @@ useItem gameMap player = do
     else (gameMap, player, "This is the wrong place to use the Teleport!")
   else (gameMap, player, "You have nothing to use!")
 
-
+-- prints out the game map and the current location (floor and room)
 showMap :: Map -> Player -> World
 showMap gameMap player = do
   let my_location = currentPosition player
@@ -240,6 +243,7 @@ getFoodNames items = [foodName x | x <- (foodItems items)]
 getFoodItem :: String -> [Food] -> Food
 getFoodItem name list = head [x | x <- list, name == foodName x]
 
+-- gets the current floor based on the third element in Pos tuple
 getCurrentFloor :: Pos -> String
 getCurrentFloor (_,_,0) = "Ground Floor"
 getCurrentFloor (_,_,-1) = "Basement"
